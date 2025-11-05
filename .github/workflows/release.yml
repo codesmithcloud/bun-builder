@@ -23,6 +23,7 @@ jobs:
         with:
           tag_prefix: v
           debug: true
+
       - name: Tag git repo with new version
         run: |
           git config user.name 'github-actions[bot]'
@@ -50,21 +51,15 @@ jobs:
           name=$(git --no-pager tag --sort=creatordate --merged refs/tags/${{ needs.tag.outputs.version-tag }} | tail -2 | head -1)
           echo "tag=$name" >> $GITHUB_OUTPUT
 
-      - name: Update changelog for release
-        id: changelog
-        uses: requarks/changelog-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fromTag: ${{ steps.previous.outputs.tag }}
-          toTag: ${{ needs.tag.outputs.version-tag }}
-          writeToFile: false
-
-      - name: Create Release
-        uses: ncipollo/release-action@v1.20.0
-        with:
-          allowUpdates: false
-          makeLatest: true
-          name: ${{ needs.tag.outputs.version-tag }}
-          body: ${{ steps.changelog.outputs.changes }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ needs.tag.outputs.version-tag }}
+      - name: Create a new release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PREV_TAG: ${{ steps.previous.outputs.tag }}
+          NEW_TAG: ${{ needs.tag.outputs.version-tag }}
+        run: |
+          gh release create $NEW_TAG \
+            --fail-on-no-commits \
+            --generate-notes \
+            --latest \
+            --notes-start-tag $PREV_TAG \
+            --verify-tag
