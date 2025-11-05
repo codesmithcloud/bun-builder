@@ -1,0 +1,24 @@
+name: Build, package and push ${{ github.repository }} OCI image
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+
+jobs:
+  build-push:
+    name: Build and push ${{ github.repository }}
+    uses: codesmithcloud/ci/.github/workflows/multi-platform-oci-build.yml@main
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    with:
+      context: ./
