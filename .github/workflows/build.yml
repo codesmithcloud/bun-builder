@@ -1,4 +1,4 @@
-name: Build, package and push ${{ github.repository }} OCI image
+name: Build, package and push OCI image
 
 on:
   push:
