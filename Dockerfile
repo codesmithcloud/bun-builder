@@ -1,6 +1,9 @@
-FROM docker.io/oven/bun:latest
+FROM node:24-alpine
 
-RUN apt update && \
-    apt install -y python3 build-essential
-
-RUN bun install -g better-sqlite3
+RUN npm install -g \
+    better-sqlite3 \
+    docus \
+    eslint \
+    nuxt \
+    typescript \
+    ipx
